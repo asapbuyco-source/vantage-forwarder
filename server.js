@@ -21,7 +21,7 @@ app.post(`/telegram-webhook/${TELEGRAM_BOT_TOKEN}`, async (req, res) => {
         // Detect channel_post.text or channel_post.caption
         if (update.channel_post) {
             const messageText = update.channel_post.text || update.channel_post.caption;
-            
+
             if (messageText) {
                 console.log(`Extracted message text: "${messageText}"`);
 
@@ -46,13 +46,15 @@ app.post(`/telegram-webhook/${TELEGRAM_BOT_TOKEN}`, async (req, res) => {
 // Function to post to Facebook Page using Graph API
 async function postToFacebook(message) {
     try {
-        console.log('Attempting to post to Facebook...');
-        const url = `https://graph.facebook.com/${FACEBOOK_PAGE_ID}/feed`;
+        console.log('Attempting to post to Facebook with image...');
+        const imageUrl = 'https://i.ibb.co/hFYkH7qP/Chat-GPT-Image-Mar-6-2026-10-29-19-PM.png';
+        const url = `https://graph.facebook.com/${FACEBOOK_PAGE_ID}/photos`;
         const response = await axios.post(url, {
-            message: message,
+            url: imageUrl,
+            caption: message,
             access_token: FACEBOOK_PAGE_ACCESS_TOKEN
         });
-        console.log('✅ Successfully posted to Facebook Page. Post ID:', response.data.id);
+        console.log('✅ Successfully posted to Facebook Page with image. Post ID:', response.data.id);
     } catch (error) {
         console.error('❌ Facebook Graph API Error:', error.response ? JSON.stringify(error.response.data, null, 2) : error.message);
     }
@@ -64,13 +66,13 @@ async function registerTelegramWebhook() {
         console.log('⚠️ Missing APP_URL or TELEGRAM_BOT_TOKEN. Check environment variables.');
         return;
     }
-    
+
     // Ensure APP_URL doesn't end with a slash
     const baseUrl = APP_URL.endsWith('/') ? APP_URL.slice(0, -1) : APP_URL;
     const webhookUrl = `${baseUrl}/telegram-webhook/${TELEGRAM_BOT_TOKEN}`;
-    
+
     console.log(`Registering webhook: ${webhookUrl}`);
-    
+
     try {
         const url = `https://api.telegram.org/bot${TELEGRAM_BOT_TOKEN}/setWebhook`;
         const response = await axios.post(url, { url: webhookUrl });
@@ -93,7 +95,7 @@ app.listen(PORT, async () => {
     console.log('FACEBOOK_PAGE_ID configured:', !!FACEBOOK_PAGE_ID);
     console.log('FACEBOOK_PAGE_ACCESS_TOKEN configured:', !!FACEBOOK_PAGE_ACCESS_TOKEN);
     console.log('APP_URL configured:', !!APP_URL);
-    
+
     // Auto-register webhook
     await registerTelegramWebhook();
 });
