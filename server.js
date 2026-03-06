@@ -1,6 +1,7 @@
 require('dotenv').config();
 const express = require('express');
 const axios = require('axios');
+const FormData = require('form-data');
 
 const app = express();
 app.use(express.json());
@@ -46,14 +47,26 @@ app.post(`/telegram-webhook/${TELEGRAM_BOT_TOKEN}`, async (req, res) => {
 // Function to post to Facebook Page using Graph API
 async function postToFacebook(message) {
     try {
-        console.log('Attempting to post to Facebook with image...');
+        console.log('Attempting to post to Facebook with image as form-data...');
         const imageUrl = 'https://i.ibb.co/hFYkH7qP/Chat-GPT-Image-Mar-6-2026-10-29-19-PM.png';
         const url = `https://graph.facebook.com/${FACEBOOK_PAGE_ID}/photos`;
-        const response = await axios.post(url, {
-            url: imageUrl,
-            caption: message,
-            access_token: FACEBOOK_PAGE_ACCESS_TOKEN
+
+        // 1. Download image as a stream
+        const imageResponse = await axios.get(imageUrl, { responseType: 'stream' });
+
+        // 2. Prepare FormData
+        const form = new FormData();
+        form.append('source', imageResponse.data);
+        form.append('caption', message);
+        form.append('access_token', FACEBOOK_PAGE_ACCESS_TOKEN);
+
+        // 3. Post to Facebook using multipart form-data
+        const response = await axios.post(url, form, {
+            headers: {
+                ...form.getHeaders()
+            }
         });
+
         console.log('✅ Successfully posted to Facebook Page with image. Post ID:', response.data.id);
     } catch (error) {
         console.error('❌ Facebook Graph API Error:', error.response ? JSON.stringify(error.response.data, null, 2) : error.message);
