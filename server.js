@@ -48,7 +48,7 @@ app.post(`/telegram-webhook/${TELEGRAM_BOT_TOKEN}`, async (req, res) => {
 async function postToFacebook(message) {
     try {
         console.log('Attempting to post to Facebook with image as form-data...');
-        const imageUrl = 'https://i.ibb.co/hFYkH7qP/Chat-GPT-Image-Mar-6-2026-10-29-19-PM.png';
+        const imageUrl = 'https://i.ibb.co/jkPLx2NW/Chat-GPT-Image-Mar-6-2026-10-59-36-PM.png';
         const url = `https://graph.facebook.com/${FACEBOOK_PAGE_ID}/photos`;
 
         // 1. Download image as a stream
