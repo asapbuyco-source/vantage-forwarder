@@ -2,6 +2,8 @@ require('dotenv').config();
 const express = require('express');
 const axios = require('axios');
 const FormData = require('form-data');
+const { Client, LocalAuth } = require('whatsapp-web.js');
+const qrcode = require('qrcode-terminal');
 
 const app = express();
 app.use(express.json());
@@ -10,7 +12,48 @@ const PORT = process.env.PORT || 3000;
 const TELEGRAM_BOT_TOKEN = process.env.TELEGRAM_BOT_TOKEN;
 const FACEBOOK_PAGE_ID = process.env.FACEBOOK_PAGE_ID;
 const FACEBOOK_PAGE_ACCESS_TOKEN = process.env.FACEBOOK_PAGE_ACCESS_TOKEN;
+const WHATSAPP_GROUP_NAME = process.env.WHATSAPP_GROUP_NAME;
 const APP_URL = process.env.APP_URL;
+
+// Initialize WhatsApp Web Client
+let whatsappStatus = 'initializing';
+
+const whatsappClient = new Client({
+    authStrategy: new LocalAuth(),
+    puppeteer: {
+        args: ['--no-sandbox', '--disable-setuid-sandbox']
+    }
+});
+
+whatsappClient.on('qr', (qr) => {
+    whatsappStatus = 'qr_ready';
+    console.log('\n--- WhatsApp QR Code ---');
+    console.log('Scan this code with your WhatsApp app to log in:');
+    qrcode.generate(qr, { small: true });
+});
+
+whatsappClient.on('ready', () => {
+    whatsappStatus = 'ready';
+    console.log('✅ WhatsApp Web Client is ready!');
+});
+
+whatsappClient.on('disconnected', (reason) => {
+    whatsappStatus = 'disconnected';
+    console.log('❌ WhatsApp was disconnected:', reason);
+    // Attempt to re-initialize
+    whatsappClient.initialize();
+});
+
+whatsappClient.on('change_state', (state) => {
+    console.log('ℹ️ WhatsApp State Change:', state);
+});
+
+whatsappClient.on('auth_failure', (msg) => {
+    whatsappStatus = 'auth_failure';
+    console.error('❌ WhatsApp Authentication failure:', msg);
+});
+
+whatsappClient.initialize();
 
 // 1. Telegram Webhook Endpoint - Secured with Token in URL path
 app.post(`/telegram-webhook/${TELEGRAM_BOT_TOKEN}`, async (req, res) => {
@@ -28,6 +71,9 @@ app.post(`/telegram-webhook/${TELEGRAM_BOT_TOKEN}`, async (req, res) => {
 
                 // 2. Facebook Auto Posting
                 await postToFacebook(messageText);
+
+                // 3. WhatsApp Auto Posting
+                await postToWhatsApp(messageText);
             } else {
                 console.log('Update does not contain text or caption. Ignoring.');
             }
@@ -73,6 +119,31 @@ async function postToFacebook(message) {
     }
 }
 
+// Function to post to WhatsApp using whatsapp-web.js
+async function postToWhatsApp(message) {
+    if (!WHATSAPP_GROUP_NAME) {
+        console.log('⚠️ WHATSAPP_GROUP_NAME missing. Skipping WhatsApp forward.');
+        return;
+    }
+
+    try {
+        console.log(`Attempting to forward to WhatsApp group: "${WHATSAPP_GROUP_NAME}"...`);
+        
+        const chats = await whatsappClient.getChats();
+        const group = chats.find(chat => chat.isGroup && chat.name === WHATSAPP_GROUP_NAME);
+
+        if (group) {
+            await group.sendMessage(message);
+            console.log('✅ Successfully forwarded to WhatsApp group.');
+        } else {
+            console.error(`❌ Could not find WhatsApp group named "${WHATSAPP_GROUP_NAME}".`);
+            console.log('Available groups:', chats.filter(c => c.isGroup).map(c => c.name).join(', '));
+        }
+    } catch (error) {
+        console.error('❌ WhatsApp Web Error:', error.message);
+    }
+}
+
 // Function to auto-register the webhook with Telegram
 async function registerTelegramWebhook() {
     if (!APP_URL || !TELEGRAM_BOT_TOKEN) {
@@ -97,7 +168,11 @@ async function registerTelegramWebhook() {
 
 // Simple health check endpoint for Railway
 app.get('/', (req, res) => {
-    res.send('Vantage Telegram-to-Facebook Forwarder is running!');
+    res.json({
+        service: 'Vantage Telegram-to-Facebook/WhatsApp Forwarder',
+        whatsapp_status: whatsappStatus,
+        facebook_token_status: !!FACEBOOK_PAGE_ACCESS_TOKEN ? 'configured' : 'missing'
+    });
 });
 
 // Start Server
@@ -107,6 +182,7 @@ app.listen(PORT, async () => {
     console.log('TELEGRAM_BOT_TOKEN configured:', !!TELEGRAM_BOT_TOKEN);
     console.log('FACEBOOK_PAGE_ID configured:', !!FACEBOOK_PAGE_ID);
     console.log('FACEBOOK_PAGE_ACCESS_TOKEN configured:', !!FACEBOOK_PAGE_ACCESS_TOKEN);
+    console.log('WHATSAPP_GROUP_NAME configured:', !!WHATSAPP_GROUP_NAME);
     console.log('APP_URL configured:', !!APP_URL);
 
     // Auto-register webhook
