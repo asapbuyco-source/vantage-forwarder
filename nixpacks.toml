@@ -2,4 +2,4 @@
 nodeVersion = "20"
 
 [phases.setup]
-nixPkgs = ["...", "chromium"]
+nixPkgs = ["nss", "nspr", "atk", "atspi", "libdrm", "libxcb", "libXext", "libXcomposite", "libXdamage", "libXrandr", "mesa", "pango", "cairo", "alsa-lib", "glib"]
