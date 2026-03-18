@@ -4,3 +4,4 @@ node_modules/
 # WhatsApp Web & Puppeteer local caches
 .wwebjs_auth/
 .wwebjs_cache/
+.cache/
