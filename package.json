@@ -5,8 +5,7 @@
     "main": "server.js",
     "scripts": {
         "start": "node server.js",
-        "dev": "nodemon server.js",
-        "railway:build": "apt-get update && apt-get install -y chromium-browser chromium-chromedriver"
+        "dev": "nodemon server.js"
     },
     "dependencies": {
         "axios": "^1.6.8",
