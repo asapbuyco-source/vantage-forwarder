@@ -2,4 +2,10 @@
 nodeVersion = "20"
 
 [phases.setup]
-nixPkgs = ["nss", "nspr", "atk", "atspi", "libdrm", "libxcb", "libXext", "libXcomposite", "libXdamage", "libXrandr", "mesa", "pango", "cairo", "alsa-lib", "glib"]
+aptPkgs = [
+    "wget", "gnupg", "ca-certificates", "procps", "libxss1", 
+    "libnss3", "libnspr4", "libatk1.0-0", "libatk-bridge2.0-0", 
+    "libcups2", "libdrm2", "libxkbcommon0", "libxcomposite1", 
+    "libxdamage1", "libxfixes3", "libxrandr2", "libgbm1", 
+    "libasound2", "libpango-1.0-0", "libcairo2", "libglib2.0-0"
+]
