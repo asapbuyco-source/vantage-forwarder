@@ -1,0 +1,51 @@
+[
+  {
+    "day": "Monday",
+    "theme": "Match Analysis",
+    "prompt": "Write a deep dive into the weekend's biggest Premier League match. Ask followers for their MVP.",
+    "time": "09:00",
+    "posted": false
+  },
+  {
+    "day": "Tuesday",
+    "theme": "Player Spotlight",
+    "prompt": "Highlight an emerging young talent from the weekend's matches. Share video clips and ask if they are the next big thing.",
+    "time": "12:00",
+    "posted": false
+  },
+  {
+    "day": "Wednesday",
+    "theme": "Interactive Quiz",
+    "prompt": "Create a quiz about this season's top goal scorers. Encourage followers to share their scores.",
+    "time": "15:00",
+    "posted": false
+  },
+  {
+    "day": "Thursday",
+    "theme": "Throwback Thursday",
+    "prompt": "Post a nostalgic video from an iconic match in the last decade. Ask followers where they watched it.",
+    "time": "18:00",
+    "posted": false
+  },
+  {
+    "day": "Friday",
+    "theme": "Fan Poll",
+    "prompt": "Run a poll asking which upcoming weekend match fans are most excited about.",
+    "time": "10:00",
+    "posted": false
+  },
+  {
+    "day": "Saturday",
+    "theme": "Live Updates",
+    "prompt": "Provide live updates and commentary on a major match happening today. Engage with followers in the comments.",
+    "time": "14:00",
+    "posted": false
+  },
+  {
+    "day": "Sunday",
+    "theme": "Goal of the Week",
+    "prompt": "Share the most spectacular goals from the weekend and ask followers to vote for their favorite.",
+    "time": "20:00",
+    "posted": false
+  }
+]

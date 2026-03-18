@@ -1,5 +1,2 @@
 [providers.node]
 nodeVersion = "20"
-
-[phases.setup]
-nixPkgs = ["nss", "nspr", "alsa-lib", "atk", "atspi2-atk", "cups", "libglvnd", "libdrm", "libxkbcommon", "mesa", "pango", "cairo", "glib", "xorg.libxcb", "xorg.libX11", "xorg.libXcomposite", "xorg.libXdamage", "xorg.libXext", "xorg.libXfixes", "xorg.libXrandr"]
