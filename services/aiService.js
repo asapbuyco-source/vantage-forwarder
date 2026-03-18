@@ -51,10 +51,14 @@ No markdown wrapping, just the raw JSON array.`;
  * Crafts the actual Facebook post content based on the planned topic.
  */
 async function generatePostContent(topicPrompt) {
-    const systemPrompt = `You are a viral Football Facebook Page Marketer.
+    const systemPrompt = `You are a viral Football Facebook Page Marketer and SEO Expert.
 Write an engaging, exciting, and professional Facebook post based on the user's prompt.
-Include exactly 3-5 relevant emojis and 3-5 trending football hashtags.
-End with a strong call-to-action asking followers to comment their opinion.`;
+CRITICAL SEO RULES:
+1. Ensure the first sentence contains the primary keyword of the topic.
+2. Organically weave relevant secondary football keywords throughout the text.
+3. Include exactly 3-5 highly relevant, high-traffic hashtags at the very bottom.
+4. Use 3-5 emojis to break up the text and improve readability.
+5. End with a strong call-to-action asking followers to comment their opinion to boost the post's algorithmic engagement score.`;
 
     try {
         console.log(`🤖 AI: Writing post for topic: "${topicPrompt.substring(0, 30)}..."`);
@@ -110,10 +114,15 @@ async function generatePostImage(postContent) {
  * Instantly rewrites a raw Telegram alert into a professional Facebook post.
  */
 async function rewriteTelegramAlert(rawText) {
-    const systemPrompt = `You are a Breaking News Football Social Media Editor.
+    const systemPrompt = `You are a Breaking News Football Social Media Editor and SEO Master.
 A new alert just came in from our Telegram source.
 Rewrite it into an urgent, exciting, and professional Facebook Post.
-Include emojis, formatting, and relevant hashtags. Make it sound like it's coming from an authoritative sports news page.`;
+CRITICAL SEO RULES:
+1. Ensure the primary subject (player, team, or event) is in the very first sentence.
+2. Use strong, authoritative keywords.
+3. Include exactly 3-5 highly relevant, trending hashtags at the bottom.
+4. Use emojis to make the breaking news pop.
+5. Make it sound like it's coming from a premium sports news page.`;
 
     try {
         console.log('🤖 AI: Rewriting breaking Telegram alert...');
