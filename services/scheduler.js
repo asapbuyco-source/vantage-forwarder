@@ -3,6 +3,7 @@ const fs = require('fs');
 const path = require('path');
 const { generateWeeklyPlan, generatePostContent, generatePostImage } = require('./aiService');
 const { postToFacebook } = require('./facebookService');
+const { postToInstagram } = require('./instagramService');
 
 const SCHEDULE_FILE = path.join(__dirname, '..', 'data', 'schedule.json');
 
@@ -43,8 +44,9 @@ async function executeScheduledPost(postTask) {
     const imageUrl = await generatePostImage(text);
     if (!imageUrl) return console.log('⚠️ Failed to generate image. Aborting.');
 
-    // 3. Post to Facebook
+    // 3. Post to Facebook & Instagram
     await postToFacebook(text, imageUrl);
+    await postToInstagram(text, imageUrl);
     
     console.log(`✅ Finished scheduled task for ${postTask.theme}.\n`);
 }

@@ -87,7 +87,7 @@ async function generatePostImage(postContent) {
         const promptResponse = await openai.chat.completions.create({
             model: "gpt-4o",
             messages: [
-                { role: "system", content: "You extract the core visual essence of the provided football social media post and write a highly detailed, photorealistic prompt for DALL-E 3 image generation. Focus on high-quality, cinematic sports imagery." },
+                { role: "system", content: "You are an expert prompt engineer for DALL-E 3. Your job is to extract the core visual essence of the provided football social media post and write a highly detailed, photorealistic prompt. Focus on high-quality, cinematic, action-packed sports imagery with dramatic lighting and vivid colors.\n\nCRITICAL RULE FOR PREDICTIONS: If the social media post contains a specific betting prediction, tip, or match pick (e.g., 'Over 2.5 Goals', 'Home Win', 'BTTS Yes'), you MUST explicitly instruct DALL-E 3 to write this exact prediction text boldly and clearly on the image. For example, add to your prompt: 'The image features bold, cinematic text overlay reading \"OVER 2.5 GOALS\"'." },
                 { role: "user", content: postContent }
             ],
             temperature: 0.7,
@@ -122,7 +122,8 @@ CRITICAL SEO RULES:
 2. Use strong, authoritative keywords.
 3. Include exactly 3-5 highly relevant, trending hashtags at the bottom.
 4. Use emojis to make the breaking news pop.
-5. Make it sound like it's coming from a premium sports news page.`;
+5. Make it sound like it's coming from a premium sports news page.
+6. If the alert contains a prediction or betting tip, highlight it prominently with all caps or bold text so the image prompt generator will recognize it.`;
 
     try {
         console.log('🤖 AI: Rewriting breaking Telegram alert...');

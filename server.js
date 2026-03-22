@@ -3,6 +3,7 @@ const express = require('express');
 const axios = require('axios');
 const { rewriteTelegramAlert, generatePostImage } = require('./services/aiService');
 const { postToFacebook } = require('./services/facebookService');
+const { postToInstagram } = require('./services/instagramService');
 const { initScheduler, createNewWeeklyPlan, readSchedule } = require('./services/scheduler');
 
 const app = express();
@@ -39,8 +40,9 @@ app.post(`/telegram-webhook/${TELEGRAM_BOT_TOKEN}`, async (req, res) => {
                     const imageUrl = await generatePostImage(aiPostText);
 
                     if (imageUrl) {
-                        // 3. Publish Immediately to Facebook
+                        // 3. Publish Immediately to Facebook & Instagram
                         await postToFacebook(aiPostText, imageUrl);
+                        await postToInstagram(aiPostText, imageUrl);
                     } else {
                         console.log('⚠️ Could not generate image for alert. Skipping Facebook post.');
                     }
