@@ -61,7 +61,10 @@ async function postToInstagram(message, imageUrl) {
         const creationId = containerResponse.data.id;
         console.log('✅ Media container created. Creation ID:', creationId);
         
-        console.log('2. Publishing media container...');
+        console.log('2. Waiting 10 seconds for Instagram to process the image...');
+        await new Promise(resolve => setTimeout(resolve, 10000));
+        
+        console.log('3. Publishing media container...');
         
         // 2. Publish Media Container
         const publishUrl = `https://graph.facebook.com/v19.0/${igAccountId}/media_publish`;
