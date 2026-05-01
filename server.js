@@ -13,7 +13,6 @@ const PORT = process.env.PORT || 3000;
 const TELEGRAM_BOT_TOKEN = process.env.TELEGRAM_BOT_TOKEN;
 const FACEBOOK_PAGE_ID = process.env.FACEBOOK_PAGE_ID;
 const FACEBOOK_PAGE_ACCESS_TOKEN = process.env.FACEBOOK_PAGE_ACCESS_TOKEN;
-const OPENAI_API_KEY = process.env.OPENAI_API_KEY;
 const APP_URL = process.env.APP_URL;
 
 // ==========================================
@@ -104,9 +103,8 @@ async function registerTelegramWebhook() {
 app.get('/', (req, res) => {
     const scheduleCount = readSchedule().length;
     res.json({
-        service: 'Vantage Autonomous Facebook AI Marketer',
+        service: 'Vantage Autonomous Facebook Marketer',
         status: 'online',
-        openai_configured: !!OPENAI_API_KEY,
         facebook_configured: !!FACEBOOK_PAGE_ACCESS_TOKEN,
         posts_scheduled: scheduleCount
     });
@@ -117,15 +115,10 @@ app.listen(PORT, async () => {
     console.log('--- Agent Environment Check ---');
     console.log('TELEGRAM_BOT_TOKEN:', !!TELEGRAM_BOT_TOKEN);
     console.log('FACEBOOK_PAGE_ACCESS_TOKEN:', !!FACEBOOK_PAGE_ACCESS_TOKEN);
-    console.log('OPENAI_API_KEY:', !!OPENAI_API_KEY);
     
     // Auto-register webhook
     await registerTelegramWebhook();
 
-    // Start the Autonomous Cron Scheduler if OpenAI is configured
-    if (OPENAI_API_KEY) {
-        initScheduler();
-    } else {
-        console.log('⚠️ Scheduler disabled: OPENAI_API_KEY is missing.');
-    }
+    // Start the Autonomous Cron Scheduler
+    initScheduler();
 });

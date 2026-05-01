@@ -1,146 +1,153 @@
 require('dotenv').config();
-const OpenAI = require('openai');
 
-const openai = new OpenAI({
-  apiKey: process.env.OPENAI_API_KEY || 'dummy-key-to-prevent-startup-crash',
-});
+// Helper function to pick a random item from an array
+function random(arr) {
+    return arr[Math.floor(Math.random() * arr.length)];
+}
 
 /**
- * Generates a structured weekly posting plan.
+ * Generates a structured weekly posting plan using predefined templates.
  * Returns a JSON array of scheduled posts.
  */
 async function generateWeeklyPlan() {
-    const systemPrompt = `You are an expert Social Media Manager for a popular Football (Soccer) Facebook Page.
-Your goal is to create a highly engaging, viral 7-day content schedule.
-For each day, provide a topic, a specific post angle, and an ideal time of day to post it.
-
-Return ONLY a valid JSON array of objects with the following schema:
-[
-  {
-    "day": "Monday",
-    "theme": "Match Analysis",
-    "prompt": "Write a deep dive into the weekend's biggest Premier League match. Ask followers for their MVP.",
-    "time": "09:00"
-  }
-]
-No markdown wrapping, just the raw JSON array.`;
-
-    try {
-        console.log('🤖 AI: Generating new weekly plan...');
-        const response = await openai.chat.completions.create({
-            model: "gpt-4o",
-            messages: [
-                { role: "system", content: systemPrompt },
-                { role: "user", content: "Create this week's football content plan." }
-            ],
-            temperature: 0.7,
-        });
-
-        const planText = response.choices[0].message.content.trim();
-        // Fallback cleanup in case it wraps in markdown anyway
-        const cleanJson = planText.replace(/```json/g, '').replace(/```/g, '').trim();
-        
-        return JSON.parse(cleanJson);
-    } catch (error) {
-        console.error('❌ AI Plan Generation Error:', error.message);
-        return null;
-    }
+    console.log('🤖 System: Generating new weekly plan from templates...');
+    const plans = [
+        [
+            { day: "Monday", theme: "Weekend Review", prompt: "weekend match analysis", time: "09:00" },
+            { day: "Wednesday", theme: "Midweek Action", prompt: "midweek fixtures and predictions", time: "12:00" },
+            { day: "Friday", theme: "Weekend Preview", prompt: "upcoming weekend matches overview", time: "15:00" }
+        ],
+        [
+            { day: "Tuesday", theme: "Champions League", prompt: "European football nights", time: "10:00" },
+            { day: "Thursday", theme: "Europa League", prompt: "Europa league analysis", time: "14:00" },
+            { day: "Saturday", theme: "Matchday Live", prompt: "Saturday premium picks", time: "11:00" }
+        ],
+        [
+            { day: "Monday", theme: "Betting Recap", prompt: "review of our latest betting tips", time: "09:00" },
+            { day: "Thursday", theme: "Value Bets", prompt: "finding the best value in the market", time: "14:00" },
+            { day: "Sunday", theme: "Super Sunday", prompt: "Sunday major derby matches", time: "10:00" }
+        ]
+    ];
+    return random(plans);
 }
 
 /**
  * Crafts the actual Facebook post content based on the planned topic.
+ * Uses SEO optimized templates and spins content.
  */
 async function generatePostContent(topicPrompt) {
-    const systemPrompt = `You are a viral Football Facebook Page Marketer and SEO Expert.
-Write an engaging, exciting, and professional Facebook post based on the user's prompt.
-CRITICAL SEO RULES:
-1. Ensure the first sentence contains the primary keyword of the topic.
-2. Organically weave relevant secondary football keywords throughout the text.
-3. Include exactly 3-5 highly relevant, high-traffic hashtags at the very bottom.
-4. Use 3-5 emojis to break up the text and improve readability.
-5. End with a strong call-to-action asking followers to comment their opinion to boost the post's algorithmic engagement score.`;
+    console.log(`🤖 System: Generating post for topic: "${topicPrompt}"`);
+    
+    const intros = [
+        "⚽ Huge day for football fans! Let's get right into it.",
+        "🔥 Matchday excitement is in the air. Here's what you need to know.",
+        "🏆 Top tier football action is upon us. Let's break down the details.",
+        "⚡ Massive updates for the football community today.",
+        "📈 Looking for the best football insights? We've got you covered."
+    ];
+    
+    const bodies = [
+        `Today we are zeroing in on ${topicPrompt}. The statistics are showing some incredible patterns.`,
+        `When it comes to ${topicPrompt}, the market is moving fast. Here is our expert take.`,
+        `Our latest analysis focuses deeply on ${topicPrompt}. You won't want to miss this value.`,
+        `We've run the numbers and the data around ${topicPrompt} is absolutely massive.`
+    ];
 
-    try {
-        console.log(`🤖 AI: Writing post for topic: "${topicPrompt.substring(0, 30)}..."`);
-        const response = await openai.chat.completions.create({
-            model: "gpt-4o",
-            messages: [
-                { role: "system", content: systemPrompt },
-                { role: "user", content: topicPrompt }
-            ],
-            temperature: 0.8,
-        });
+    const outros = [
+        "What's your prediction? Drop a comment below! 👇",
+        "Do you agree with our take? Let us know in the comments! 🗣️",
+        "Who is your MVP today? Comment your thoughts! 🔮",
+        "Make sure to follow us for more premium football picks! 🎯"
+    ];
 
-        return response.choices[0].message.content.trim();
-    } catch (error) {
-        console.error('❌ AI Content Generation Error:', error.message);
-        return null;
-    }
+    const hashtags = [
+        "#FootballPredictions #SoccerTips #BettingExpert #Matchday",
+        "#PremierLeague #FootballCommunity #ValueBets #SoccerNews",
+        "#SportsBetting #FootballAnalysis #WinningTips #Soccer"
+    ];
+
+    return `${random(intros)}\n\n${random(bodies)}\n\n${random(outros)}\n\n${random(hashtags)}`;
 }
 
 /**
- * Generates a DALL-E image prompt from the post content and fetches the image URL.
+ * Provides a highly engaging, SEO optimized stock image URL for the post.
  */
 async function generatePostImage(postContent) {
-    try {
-        console.log('🤖 AI: Designing image prompt based on content...');
-        const promptResponse = await openai.chat.completions.create({
-            model: "gpt-4o",
-            messages: [
-                { role: "system", content: "You are an expert prompt engineer for DALL-E 3. Your job is to extract the core visual essence of the provided football social media post and write a highly detailed, photorealistic prompt. Focus on high-quality, cinematic, action-packed sports imagery with dramatic lighting and vivid colors.\n\nCRITICAL RULE FOR PREDICTIONS: If the social media post contains a specific betting prediction, tip, or match pick (e.g., 'Over 2.5 Goals', 'Home Win', 'BTTS Yes'), you MUST explicitly instruct DALL-E 3 to write this exact prediction text boldly and clearly on the image. For example, add to your prompt: 'The image features bold, cinematic text overlay reading \"OVER 2.5 GOALS\"'." },
-                { role: "user", content: postContent }
-            ],
-            temperature: 0.7,
-        });
+    console.log('🖼️ System: Fetching high-quality football image...');
+    
+    const images = [
+        "https://images.unsplash.com/photo-1579952363873-27f3bade9f55?q=80&w=1024", // football on pitch
+        "https://images.unsplash.com/photo-1522778119026-d647f0596c20?q=80&w=1024", // pitch close up
+        "https://images.unsplash.com/photo-1511886929837-354d827aae26?q=80&w=1024", // ball on grass sunset
+        "https://images.unsplash.com/photo-1489944440615-453fc2b6a9a9?q=80&w=1024", // football field lines
+        "https://images.unsplash.com/photo-1540747913346-19e32dc3e97e?q=80&w=1024", // stadium seats
+        "https://upload.wikimedia.org/wikipedia/commons/thumb/1/1b/Camp_Nou_Panoramica_2013.jpg/1024px-Camp_Nou_Panoramica_2013.jpg",
+        "https://upload.wikimedia.org/wikipedia/commons/thumb/d/d4/Santiago_Bernabeu_Stadium_-_panoramic_view.jpg/1024px-Santiago_Bernabeu_Stadium_-_panoramic_view.jpg",
+        "https://upload.wikimedia.org/wikipedia/commons/thumb/b/b8/Wembley_Stadium_interior.jpg/1024px-Wembley_Stadium_interior.jpg"
+    ];
 
-        const dallePrompt = promptResponse.choices[0].message.content.trim();
-        
-        console.log('🖼️ AI: Generating image with DALL-E 3...');
-        const imageResponse = await openai.images.generate({
-            model: "dall-e-3",
-            prompt: dallePrompt,
-            n: 1,
-            size: "1024x1024",
-        });
-
-        return imageResponse.data[0].url;
-    } catch (error) {
-        console.error('❌ AI Image Generation Error:', error.message);
-        return null;
-    }
+    return random(images);
 }
 
 /**
- * Instantly rewrites a raw Telegram alert into a professional Facebook post.
+ * Rewrites a raw Telegram alert into a professional, SEO-friendly Facebook post.
  */
 async function rewriteTelegramAlert(rawText) {
-    const systemPrompt = `You are a Breaking News Football Social Media Editor and SEO Master.
-A new alert just came in from our Telegram source.
-Rewrite it into an urgent, exciting, and professional Facebook Post.
-CRITICAL SEO RULES:
-1. Ensure the primary subject (player, team, or event) is in the very first sentence.
-2. Use strong, authoritative keywords.
-3. Include exactly 3-5 highly relevant, trending hashtags at the bottom.
-4. Use emojis to make the breaking news pop.
-5. Make it sound like it's coming from a premium sports news page.
-6. If the alert contains a prediction or betting tip, highlight it prominently with all caps or bold text so the image prompt generator will recognize it.`;
-
-    try {
-        console.log('🤖 AI: Rewriting breaking Telegram alert...');
-        const response = await openai.chat.completions.create({
-            model: "gpt-4o",
-            messages: [
-                { role: "system", content: systemPrompt },
-                { role: "user", content: rawText }
-            ],
-            temperature: 0.7,
-        });
-
-        return response.choices[0].message.content.trim();
-    } catch (error) {
-        console.error('❌ AI Rewrite Error:', error.message);
-        return null;
+    console.log('🤖 System: Processing breaking Telegram alert...');
+    
+    const lowerText = rawText.toLowerCase();
+    let detectedKeyword = "this match";
+    
+    // Keyword extraction for SEO
+    if (lowerText.includes("over 2.5") || lowerText.includes("over 1.5")) {
+        detectedKeyword = "the Over goals market";
+    } else if (lowerText.includes("under")) {
+        detectedKeyword = "the Under goals market";
+    } else if (lowerText.includes("win") || lowerText.includes("1x2") || lowerText.includes("ml")) {
+        detectedKeyword = "a straight win prediction";
+    } else if (lowerText.includes("btts") || lowerText.includes("both teams to score")) {
+        detectedKeyword = "Both Teams to Score (BTTS)";
+    } else if (lowerText.includes("corner")) {
+        detectedKeyword = "the corner market";
     }
+
+    const intros = [
+        "🚨 BREAKING ALERT 🚨\n━━━━━━━━━━━━━━━━━━━━", 
+        "⚡ URGENT MATCH UPDATE ⚡\n━━━━━━━━━━━━━━━━━━━━", 
+        "🔥 PREMIUM PICK DETECTED 🔥\n━━━━━━━━━━━━━━━━━━━━",
+        "🎯 NEW INSIGHT JUST IN 🎯\n━━━━━━━━━━━━━━━━━━━━"
+    ];
+    
+    const bodies = [
+        `Our advanced tracking system has just identified massive value concerning ${detectedKeyword}! 📈`,
+        `We are seeing huge sharp money movements regarding ${detectedKeyword}. 💸`,
+        `Don't miss out on this high-confidence alert for ${detectedKeyword}. 🔥`,
+        `Top tier intelligence suggests a huge opportunity in ${detectedKeyword}. 🏆`
+    ];
+    
+    // Make the raw prediction text stand out beautifully
+    const formattedRawText = rawText.split('\n').map(line => `🔹 ${line.trim()}`).join('\n');
+
+    const details = [
+        `👇 *THE BREAKDOWN* 👇\n\n${formattedRawText}\n\n━━━━━━━━━━━━━━━━━━━━`,
+        `📌 *ALERT DETAILS* 📌\n\n${formattedRawText}\n\n━━━━━━━━━━━━━━━━━━━━`,
+        `✅ *PREDICTION DATA* ✅\n\n${formattedRawText}\n\n━━━━━━━━━━━━━━━━━━━━`
+    ];
+    
+    const outros = [
+        "Act fast before the odds drop! ⏰", 
+        "What's your move? Let us know below! 👇", 
+        "Let's lock this in! 💪",
+        "Are you tailing this? Drop a comment! 🗣️"
+    ];
+
+    const hashtags = [
+        "#FootballAlert #SoccerPicks #BettingTips #SportsBetting #LiveOdds",
+        "#MatchPrediction #ValueBet #SoccerTips #FootballCommunity",
+        "#InPlayBetting #FootballNews #Soccer #BettingExpert"
+    ];
+    
+    return `${random(intros)}\n\n${random(bodies)}\n\n${random(details)}\n\n${random(outros)}\n\n${random(hashtags)}`;
 }
 
 module.exports = {
