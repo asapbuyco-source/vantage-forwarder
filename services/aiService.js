@@ -14,18 +14,21 @@ async function generateWeeklyPlan() {
     const plans = [
         [
             { day: "Monday", theme: "Weekend Review", prompt: "weekend match analysis", time: "09:00" },
+            { day: "Tuesday", theme: "Tactical Tuesday", prompt: "deep dive into team tactics", time: "11:00" },
             { day: "Wednesday", theme: "Midweek Action", prompt: "midweek fixtures and predictions", time: "12:00" },
-            { day: "Friday", theme: "Weekend Preview", prompt: "upcoming weekend matches overview", time: "15:00" }
-        ],
-        [
-            { day: "Tuesday", theme: "Champions League", prompt: "European football nights", time: "10:00" },
             { day: "Thursday", theme: "Europa League", prompt: "Europa league analysis", time: "14:00" },
-            { day: "Saturday", theme: "Matchday Live", prompt: "Saturday premium picks", time: "11:00" }
+            { day: "Friday", theme: "Weekend Preview", prompt: "upcoming weekend matches overview", time: "15:00" },
+            { day: "Saturday", theme: "Matchday Live", prompt: "Saturday premium picks", time: "11:00" },
+            { day: "Sunday", theme: "Super Sunday", prompt: "Sunday major derby matches", time: "10:00" }
         ],
         [
             { day: "Monday", theme: "Betting Recap", prompt: "review of our latest betting tips", time: "09:00" },
-            { day: "Thursday", theme: "Value Bets", prompt: "finding the best value in the market", time: "14:00" },
-            { day: "Sunday", theme: "Super Sunday", prompt: "Sunday major derby matches", time: "10:00" }
+            { day: "Tuesday", theme: "Champions League", prompt: "European football nights", time: "10:00" },
+            { day: "Wednesday", theme: "Value Bets", prompt: "finding the best value in the market", time: "14:00" },
+            { day: "Thursday", theme: "Underdog Picks", prompt: "finding the upset of the week", time: "12:00" },
+            { day: "Friday", theme: "Acca Friday", prompt: "building the perfect accumulator", time: "16:00" },
+            { day: "Saturday", theme: "Saturday Selections", prompt: "top picks for the day", time: "10:00" },
+            { day: "Sunday", theme: "Sunday Showdown", prompt: "biggest matches to watch today", time: "09:00" }
         ]
     ];
     return random(plans);
